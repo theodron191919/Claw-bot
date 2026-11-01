@@ -9,6 +9,9 @@ const raid = require("./security/raid");
 const logger = require("./security/logger");
 const quarantine = require("./security/quarantine");
 const config = require("./security/config");
+const antiScam = require("./security/antiscam");
+const backup = require("./security/backup");
+const storage = require("./security/storage");
 
 const messageBuckets = new Map();
 const snapshots = new Map();
@@ -101,7 +104,10 @@ async function installAutoMod(guild) {
 }
 
 async function initialize(client) {
-  client.on("messageCreate", (message) => handleMessage(message).catch((error) => console.error("Anti-spam error:", error)));
+  client.on("messageCreate", (message) => {
+    handleMessage(message).catch((error) => console.error("Anti-spam error:", error));
+    antiScam.handle(message).catch((error) => console.error("Anti-scam error:", error));
+  });
   client.on("guildAuditLogEntryCreate", (entry, guild) => audit.handle(entry, guild).catch((error) => console.error("Audit handler error:", error)));
   client.on("guildMemberAdd", (member) => raid.handle(member).catch((error) => console.error("Raid handler error:", error)));
   client.on("guildCreate", (guild) => captureGuildSnapshot(guild).catch((error) => console.error("Snapshot error:", error)));
@@ -123,6 +129,34 @@ async function execute(interaction) {
     const rules = await installAutoMod(interaction.guild);
     await interaction.reply({
       content: rules.length ? "Installed " + rules.length + " AutoMod rule(s)." : "The Claw Utils AutoMod rules are already installed.",
+      ephemeral: true,
+    });
+  } else if (subcommand === "backup") {
+    const result = await backup.create(interaction.guild);
+    await logger.send(interaction.guild, "STRUCTURE BACKUP CREATED", {
+      File: result.filename,
+      Channels: result.channels,
+      Roles: result.roles,
+      Storage: backup.durable ? "Persistent /data volume" : "Local container storage; may be lost on redeploy",
+    });
+    await interaction.reply({
+      content: "Backup created: " + result.channels + " channels and " + result.roles + " roles. " + (backup.durable ? "Stored on the persistent /data volume." : "WARNING: storage is not persistent yet; configure a Fly volume before relying on backups."),
+      ephemeral: true,
+    });
+  } else if (subcommand === "status") {
+    const files = await backup.list(interaction.guild.id);
+    await interaction.reply({
+      content: [
+        "Claw Utils security status",
+        "Audit logging: enabled",
+        "Anti-nuke containment: enabled",
+        "Anti-raid detection: " + (config.raid.enabled ? "enabled" : "disabled"),
+        "Anti-spam: " + (config.spam.enabled ? "enabled" : "disabled"),
+        "Anti-scam link filter: enabled",
+        "Recent structure backups: " + files.length,
+        "Backup storage: " + (backup.durable ? "persistent volume path" : "temporary container storage"),
+        "Owner exemption: server owner only",
+      ].join("\\n"),
       ephemeral: true,
     });
   } else if (subcommand === "snapshot") {
