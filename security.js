@@ -22,7 +22,7 @@ function trim(bucket, cutoff) {
 
 async function handleMessage(message) {
   if (!config.spam.enabled || !message.guild || message.author.bot || !message.member) return;
-  if (message.member.permissions.has(PermissionFlagsBits.ManageMessages)) return;
+  if (message.author.id === message.guild.ownerId) return;
 
   const key = message.guild.id + ":" + message.author.id;
   const bucket = messageBuckets.get(key) || [];
@@ -120,8 +120,8 @@ async function initialize(client) {
 
 async function execute(interaction) {
   if (!interaction.isChatInputCommand?.() || interaction.commandName !== "security") return false;
-  if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-    await interaction.reply({ content: "You need Manage Server permission to use this command.", ephemeral: true });
+  if (!interaction.guild || interaction.user.id !== interaction.guild.ownerId) {
+    await interaction.reply({ content: "Only the server owner can use Claw Utils security controls.", ephemeral: true });
     return true;
   }
   const subcommand = interaction.options.getSubcommand();
