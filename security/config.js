@@ -22,10 +22,15 @@ module.exports = Object.freeze({
   ],
   watchedAuditActions: [
     "ChannelCreate", "ChannelUpdate", "ChannelDelete",
+    "ChannelOverwriteCreate", "ChannelOverwriteUpdate", "ChannelOverwriteDelete",
     "RoleCreate", "RoleUpdate", "RoleDelete", "MemberRoleUpdate",
-    "MemberBanAdd", "MemberBanRemove", "MemberKick", "MemberPrune",
+    "MemberBanAdd", "MemberBanRemove", "MemberKick", "MemberPrune", "MemberMove", "MemberDisconnect",
     "WebhookCreate", "WebhookUpdate", "WebhookDelete", "BotAdd",
+    "InviteCreate", "InviteUpdate", "InviteDelete",
+    "EmojiCreate", "EmojiUpdate", "EmojiDelete", "StickerCreate", "StickerUpdate", "StickerDelete",
+    "MessageDelete", "MessageBulkDelete",
     "GuildUpdate", "IntegrationCreate", "IntegrationUpdate", "IntegrationDelete",
-    "MemberUpdate",
+    "MemberUpdate", "GuildScheduledEventCreate", "GuildScheduledEventUpdate", "GuildScheduledEventDelete",
+    "AutoModerationRuleCreate", "AutoModerationRuleUpdate", "AutoModerationRuleDelete",
   ],
 });
