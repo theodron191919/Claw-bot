@@ -22,6 +22,7 @@ function getAddedRoles(entry) {
 }
 
 async function handle(entry, guild) {
+  if (!config.audit.enabled) return;
   if (!config.watchedAuditActions.some((name) => AuditLogEvent[name] === entry.action)) return;
   if (seen.has(entry.id)) return;
   seen.add(entry.id);
@@ -35,7 +36,7 @@ async function handle(entry, guild) {
     Actor: actorId || "Unknown",
     Target: targetId || "Unknown",
     Reason: entry.reason || "No audit reason supplied",
-    Timestamp: new Date(entry.createdTimestamp).toISOString(),
+    Timestamp: Number.isFinite(entry.createdTimestamp) ? new Date(entry.createdTimestamp).toISOString() : "Unavailable",
   });
 
   if (!actorId || actorId === guild.ownerId || entry.executor?.bot) return;
