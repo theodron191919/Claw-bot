@@ -1,4 +1,3 @@
-const { PermissionFlagsBits } = require("discord.js");
 const logger = require("./logger");
 
 const suspiciousPatterns = [
