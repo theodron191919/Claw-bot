@@ -1,6 +1,5 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const config = require("./config");
 
 const root = process.env.BACKUP_DIR || path.join(process.cwd(), "data", "backups");
 
