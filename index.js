@@ -4,7 +4,7 @@ const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
 const guildId = process.env.GUILD_ID;
 if (!token || !clientId) throw new Error("DISCORD_TOKEN and CLIENT_ID are required.");
-const commands = [new SlashCommandBuilder().setName("security").setDescription("Manage security.").addSubcommand(s => s.setName("automod").setDescription("Install AutoMod rules.")).addSubcommand(s => s.setName("snapshot").setDescription("Refresh the server snapshot.")).toJSON()];
+const commands = [new SlashCommandBuilder().setName("security").setDescription("Manage security.").addSubcommand(s => s.setName("status").setDescription("Show protection and backup status.")).addSubcommand(s => s.setName("automod").setDescription("Install AutoMod rules.")).addSubcommand(s => s.setName("snapshot").setDescription("Refresh the in-memory snapshot.")).addSubcommand(s => s.setName("backup").setDescription("Create a server structure backup.")).toJSON()];
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 client.once(Events.ClientReady, async c => {
   console.log("Claw Utils online as " + c.user.tag);
