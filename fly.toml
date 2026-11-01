@@ -1,1 +1,11 @@
+app = "claw-bot"
+primary_region = "ord"
 
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+
+[processes]
+  app = "npm start"
