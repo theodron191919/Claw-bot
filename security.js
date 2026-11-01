@@ -11,7 +11,6 @@ const quarantine = require("./security/quarantine");
 const config = require("./security/config");
 const antiScam = require("./security/antiscam");
 const backup = require("./security/backup");
-const storage = require("./security/storage");
 
 const messageBuckets = new Map();
 const snapshots = new Map();
@@ -156,7 +155,7 @@ async function execute(interaction) {
         "Recent structure backups: " + files.length,
         "Backup storage: " + (backup.durable ? "persistent volume path" : "temporary container storage"),
         "Owner exemption: server owner only",
-      ].join("\\n"),
+      ].join("\n"),
       ephemeral: true,
     });
   } else if (subcommand === "snapshot") {
