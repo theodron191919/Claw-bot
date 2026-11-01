@@ -12,7 +12,7 @@ function getAddedRoles(entry) {
 }
 
 async function handle(entry, guild) {
-  if (!config.watchedAuditActions.includes(AuditLogEvent[entry.action])) return;
+  if (!config.watchedAuditActions.some((name) => AuditLogEvent[name] === entry.action)) return;
   if (seen.has(entry.id)) return;
   seen.add(entry.id);
   setTimeout(() => seen.delete(entry.id), config.audit.dedupeMs);
