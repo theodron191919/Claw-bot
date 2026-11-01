@@ -177,6 +177,7 @@ async function execute(interaction) {
         "Anti-spam: " + (config.spam.enabled ? "enabled" : "disabled"),
         "Anti-scam link filter: enabled",
         "Recent structure backups: " + files.length,
+        "Backup filenames: " + (files.length ? files.join(", ") : "None"),
         "Backup storage: " + (backup.durable ? "persistent volume path" : "temporary container storage"),
         "Owner exemption: server owner only",
       ].join("\n"),
