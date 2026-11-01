@@ -73,9 +73,9 @@ All `/security` commands are restricted to the server owner:
 - Known impersonation-style Discord/Steam scam URLs are deleted and logged. Repeated detections can trigger a timeout.
 - Anti-spam and suspicious-link detection can produce false positives. Review security logs and test in a private server before relying on automatic actions.
 
-## Backup restoration
+## Channel restoration
 
-Restore is intentionally not automated yet. A backup is a recovery reference, not a command to overwrite a live server. Review a backup and use a dry-run restoration plan before applying structural changes. This avoids accidentally overwriting newer channels, permissions, or roles.
+The owner can run `/security status` to see recent backup filenames, then run `/security restore` with the exact filename and type `RESTORE` in the confirmation field. Restore recreates missing supported channels and categories from that backup. It does not delete or overwrite existing channels. It matches existing channels by name and type, restores category-first ordering, and remaps permission overwrites for the @everyone role and roles matched by name. Member-specific overwrites are skipped because old member IDs may not be safe to reuse. Unsupported channel types (including threads) are skipped. Review the restore result and audit log. This is not a full point-in-time rollback and does not restore messages, members, or deleted role definitions.
 
 ## Operations
 
