@@ -1,0 +1,31 @@
+const { PermissionFlagsBits } = require("discord.js");
+
+module.exports = Object.freeze({
+  logChannelId: process.env.SECURITY_LOG_CHANNEL_ID || "1563725011850756103",
+  quarantineRoleName: "Claw Utils Quarantine",
+  ownerExempt: true,
+  audit: { enabled: true, dedupeMs: 60_000, channelDeleteLimit: 3, channelDeleteWindowMs: 15_000 },
+  quarantine: { enabled: true, timeoutMs: 28 * 24 * 60 * 60 * 1000 },
+  raid: { enabled: true, joinLimit: 8, windowMs: 10_000, accountAgeDays: 7, lockdownMs: 5 * 60_000 },
+  spam: { enabled: true, messageLimit: 6, windowMs: 7_000, duplicateLimit: 4, timeoutMs: 60_000 },
+  powerfulPermissions: [
+    PermissionFlagsBits.Administrator,
+    PermissionFlagsBits.ManageGuild,
+    PermissionFlagsBits.ManageRoles,
+    PermissionFlagsBits.ManageChannels,
+    PermissionFlagsBits.BanMembers,
+    PermissionFlagsBits.KickMembers,
+    PermissionFlagsBits.ManageWebhooks,
+    PermissionFlagsBits.ManageMessages,
+    PermissionFlagsBits.ModerateMembers,
+    PermissionFlagsBits.ManageEvents,
+  ],
+  watchedAuditActions: [
+    "ChannelCreate", "ChannelUpdate", "ChannelDelete",
+    "RoleCreate", "RoleUpdate", "RoleDelete", "MemberRoleUpdate",
+    "MemberBanAdd", "MemberBanRemove", "MemberKick", "MemberPrune",
+    "WebhookCreate", "WebhookUpdate", "WebhookDelete", "BotAdd",
+    "GuildUpdate", "IntegrationCreate", "IntegrationUpdate", "IntegrationDelete",
+    "MemberUpdate",
+  ],
+});
