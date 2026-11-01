@@ -5,6 +5,16 @@ const quarantine = require("./quarantine");
 
 const seen = new Set();
 const channelDeletes = new Map();
+const destructiveActions = new Map();
+const webhookCreates = new Map();
+
+function countRecent(map, key, windowMs) {
+  const cutoff = Date.now() - windowMs;
+  const recent = (map.get(key) || []).filter((time) => time >= cutoff);
+  recent.push(Date.now());
+  map.set(key, recent);
+  return recent.length;
+}
 
 function getAddedRoles(entry) {
   const change = entry.changes?.find((item) => item.key === "$add");
@@ -29,6 +39,35 @@ async function handle(entry, guild) {
   });
 
   if (!actorId || actorId === guild.ownerId || entry.executor?.bot) return;
+
+  if (entry.action === AuditLogEvent.BotAdd) {
+    await quarantine.apply(guild, actorId, "Added a bot to the server; owner approval is required.", { incidentId: entry.id });
+    return;
+  }
+
+  if (entry.action === AuditLogEvent.RoleCreate) {
+    const createdRole = targetId ? await guild.roles.fetch(targetId).catch(() => null) : null;
+    if (createdRole && createdRole.permissions.has(config.powerfulPermissions)) {
+      await quarantine.apply(guild, actorId, "Created a role with powerful permissions: " + createdRole.name, { incidentId: entry.id });
+    }
+    return;
+  }
+
+  if (entry.action === AuditLogEvent.WebhookCreate) {
+    const count = countRecent(webhookCreates, actorId, 15_000);
+    if (count >= 3) {
+      await quarantine.apply(guild, actorId, "Created " + count + " webhooks within 15 seconds.", { incidentId: entry.id });
+    }
+    return;
+  }
+
+  if ([AuditLogEvent.MemberBanAdd, AuditLogEvent.MemberKick].includes(entry.action)) {
+    const count = countRecent(destructiveActions, actorId, 15_000);
+    if (count >= 3) {
+      await quarantine.apply(guild, actorId, "Performed " + count + " bans/kicks within 15 seconds.", { incidentId: entry.id });
+    }
+    return;
+  }
 
   if (entry.action === AuditLogEvent.RoleDelete) {
     await quarantine.apply(guild, actorId, "Deleted a server role.", { incidentId: entry.id });
