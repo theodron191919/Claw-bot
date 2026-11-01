@@ -11,6 +11,7 @@ const suspiciousPatterns = [
   /nitro[.-]claim/i,
 ];
 const recent = new Map();
+const WINDOW_MS = 60 * 60 * 1000;
 
 async function handle(message) {
   if (!message.guild || message.author.bot || !message.member || message.author.id === message.guild.ownerId) return;
@@ -21,8 +22,9 @@ async function handle(message) {
   if (!hit) return;
 
   const key = message.guild.id + ":" + message.author.id;
-  const count = (recent.get(key) || 0) + 1;
-  recent.set(key, count);
+  const previous = recent.get(key);
+  const count = previous && Date.now() - previous.firstSeen < WINDOW_MS ? previous.count + 1 : 1;
+  recent.set(key, { count, firstSeen: previous?.firstSeen || Date.now() });
   await message.delete().catch(() => {});
   let timedOut = false;
   if (count >= 2 && message.member.moderatable) {
