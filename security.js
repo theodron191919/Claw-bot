@@ -142,6 +142,30 @@ async function execute(interaction) {
       content: "Backup created: " + result.channels + " channels and " + result.roles + " roles. " + (backup.durable ? "Stored on the persistent /data volume." : "WARNING: storage is not persistent yet; configure a Fly volume before relying on backups."),
       ephemeral: true,
     });
+  } else if (subcommand === "restore") {
+    const filename = interaction.options.getString("backup", true);
+    const confirmation = interaction.options.getString("confirm", true);
+    if (confirmation !== "RESTORE") {
+      await interaction.reply({ content: "Restore cancelled. Enter RESTORE exactly in the confirmation field to proceed.", ephemeral: true });
+      return true;
+    }
+    await interaction.deferReply({ ephemeral: true });
+    const result = await backup.restoreChannels(interaction.guild, filename);
+    await logger.send(interaction.guild, "CHANNEL RESTORE COMPLETED", {
+      Backup: filename,
+      Created: result.created,
+      AlreadyPresent: result.skipped,
+      Unsupported: result.unsupported,
+      Failed: result.failed,
+      PerformedBy: interaction.user.id
+    });
+    await interaction.editReply({
+      content: "Channel restore finished. Created: " + result.created +
+        " | Already present: " + result.skipped +
+        " | Unsupported: " + result.unsupported +
+        " | Failed: " + result.failed +
+        ". Existing channels were not overwritten or deleted."
+    });
   } else if (subcommand === "status") {
     const files = await backup.list(interaction.guild.id);
     await interaction.reply({
