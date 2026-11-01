@@ -21,7 +21,7 @@ async function handle(member) {
       AccountAgeDays: ageDays.toFixed(2),
     });
 
-    if (ageDays < 1) {
+    if (ageDays < config.raid.accountAgeDays) {
       await quarantine.apply(guild, member.id, "New account joined during a detected join raid.", {
         incidentId: "raid-" + guild.id + "-" + now,
       });
