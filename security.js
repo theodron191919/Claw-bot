@@ -8,6 +8,7 @@ const {
 
 const name = "Security";
 const description = "Anti-spam, anti-nuke monitoring, and Discord AutoMod setup.";
+const SECURITY_LOG_CHANNEL_ID = "1563725011850756103";
 
 const config = {
   spam: {
@@ -45,19 +46,18 @@ function trimBucket(bucket, cutoff) {
   while (bucket.length && bucket[0].time < cutoff) bucket.shift();
 }
 
-function logChannelFor(guild, configuredId) {
-  if (configuredId) return guild.channels.cache.get(configuredId) || null;
-  return null;
+function logChannelFor(guild, configuredId = SECURITY_LOG_CHANNEL_ID) {
+  return guild.channels.cache.get(configuredId) || null;
 }
 
 async function sendLog(guild, message, configuredId) {
-  const channel = logChannelFor(guild, configuredId || process.env.SECURITY_LOG_CHANNEL_ID);
+  const channel = logChannelFor(guild, configuredId || SECURITY_LOG_CHANNEL_ID);
   if (!channel || !channel.isTextBased() || !channel.send) return;
   await channel.send({ content: message }).catch(() => {});
 }
 
 function normalizeContent(content) {
-  return content.toLowerCase().replace(/\s+/g, " ").trim();
+  return content.toLowerCase().replace(/\\s+/g, " ").trim();
 }
 
 async function handleMessage(message, settings = config) {
