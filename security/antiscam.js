@@ -14,7 +14,7 @@ const suspiciousPatterns = [
 const recent = new Map();
 
 async function handle(message) {
-  if (!message.guild || message.author.bot || !message.member) return;
+  if (!message.guild || message.author.bot || !message.member || message.author.id === message.guild.ownerId) return;
   const text = message.content || "";
   const urls = text.match(/https?:\/\/[^\s<>]+/gi) || [];
   if (!urls.length) return;
